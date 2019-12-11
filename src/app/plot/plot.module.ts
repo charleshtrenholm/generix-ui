@@ -13,10 +13,18 @@ import * as PlotlyJS from 'plotly.js/dist/plotly.js';
 import { QueryBuilderService } from '../shared/services/query-builder.service';
 import { PlotService } from '../shared/services/plot.service';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { PlotConstraintsComponent } from './plot-options/plot-constraints/plot-constraints.component';
 
 PlotlyModule.plotlyjs = PlotlyJS;
 @NgModule({
-  declarations: [PlotComponent, PlotOptionsComponent, DimensionOptionsComponent, AxisLabelerComponent, PlotResultComponent],
+  declarations: [
+    PlotComponent,
+    PlotOptionsComponent,
+    DimensionOptionsComponent,
+    AxisLabelerComponent,
+    PlotResultComponent,
+    PlotConstraintsComponent
+  ],
   imports: [
     CommonModule,
     PlotRoutingModule,

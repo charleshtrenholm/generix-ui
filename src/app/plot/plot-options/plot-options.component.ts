@@ -18,6 +18,7 @@ export class PlotOptionsComponent implements OnInit {
   public plotTypeDataValue: string; // for select2
   public dimensionData: Array<Select2OptionData> = [];
   public listPlotTypes: any;
+  public filteredPlotTypes: any;
   public selectedPlotType: any;
   public axisBlocks: any[];
   public objectId: string;
@@ -25,6 +26,7 @@ export class PlotOptionsComponent implements OnInit {
   public dimensions: Dimension[];
   public plotIcons = {};
   public previousUrl: string;
+  public selectedNumberOfDimensions = 2;
   @Output() updated: EventEmitter<any> = new EventEmitter();
   currentUrl: string;
   isEditor = false; // determines whether component is in plot/options or plot/result
@@ -40,6 +42,11 @@ export class PlotOptionsComponent implements OnInit {
     },
     escapeMarkup: m => m
   };
+
+  numberOfDimensions: Select2OptionData[] = [
+    {id: '2', text: '2'},
+    {id: '3', text: '3'}
+  ];
 
   constructor(
     private route: ActivatedRoute,
@@ -72,6 +79,12 @@ export class PlotOptionsComponent implements OnInit {
     this.queryBuilder.getObjectMetadata(this.objectId)
       .subscribe((result: any) => {
         this.metadata = result;
+        // this.selectedNumberOfDimensions = this.metadata.dim_context.length <= 1 ? 2 : 3;
+        if (this.metadata.dim_context.length === 1) {
+          this.selectedNumberOfDimensions = 1;
+        } else {
+          this.selectedNumberOfDimensions = 2;
+        }
 
         // get list of plot types from server
         this.getPlotTypes();
@@ -79,14 +92,7 @@ export class PlotOptionsComponent implements OnInit {
         // set title and dimensions
         const plotType = this.plotService.getPlotType();
         if (!plotType) {
-          // create new plot config
-          this.plotService.setConfig(
-            result.data_type.oterm_name,
-            result.dim_context.length,
-            (dims: Dimension[]) => {
-              this.dimensions = dims;
-            }
-          );
+          this.setConfig(result);
         } else {
           // use old plot config (coming back from /result)
           this.plotTypeDataValue = plotType;
@@ -113,16 +119,34 @@ export class PlotOptionsComponent implements OnInit {
     test() {
     }
 
+    setConfig(data) {
+      this.plotService.setConfig(
+        data.data_type.oterm_name,
+        this.selectedNumberOfDimensions - 1,
+        (dims: Dimension[]) => {
+          this.dimensions = dims;
+        }
+      );
+    }
+
     getPlotTypes() {
     this.plotService.getPlotTypes()
       .subscribe((data: any) => {
         // filter plot types by n_dimension
-        this.listPlotTypes = data.results.filter((val, idx) => {
-          return val.n_dimensions === this.metadata.dim_context.length;
+        // this.listPlotTypes = data.results.filter((val, idx) => {
+        //   return val.n_dimensions === this.metadata.dim_context.length;
+        // });
+        this.listPlotTypes = data.results;
+
+        this.filteredPlotTypes = data.results.filter(val => {
+          // if (this.metadata.dim_context.length === 1) { return val.n_dimensions === 1; }
+          // return (val.n_dimensions + 1) >= this.selectedNumberOfDimensions;
+          return this.selectedNumberOfDimensions === 2
+            ? val.n_dimensions === 1 : val.n_dimensions > 1;
         });
 
         // add plot type values to select2
-        this.plotTypeData = [{id: '', text: ''}, ...this.listPlotTypes.map((val, idx) => {
+        this.plotTypeData = [{id: '', text: ''}, ...this.filteredPlotTypes.map((val, idx) => {
           return { id: idx.toString(), text: val.name }; }
         )];
 
@@ -136,11 +160,12 @@ export class PlotOptionsComponent implements OnInit {
   updatePlotType(event) {
     if (event.value.length) {
       const n = parseInt(event.value, 10);
-      const { plotly_trace, plotly_layout, axis_blocks } = this.listPlotTypes[n];
+      const { plotly_trace, plotly_layout, axis_blocks } = this.filteredPlotTypes[n];
       this.plotBuilder.plotly_trace = plotly_trace;
       this.plotBuilder.plotly_layout = plotly_layout;
       this.axisBlocks = axis_blocks;
-      this.selectedPlotType = this.listPlotTypes[n];
+      this.selectedPlotType = this.filteredPlotTypes[n];
+      this.setConfig(this.metadata);
       this.plotService.setPlotType(event.value);
     }
   }
@@ -159,6 +184,18 @@ export class PlotOptionsComponent implements OnInit {
     this.plotService.clearPlotBuilder();
     const url = this.previousUrl ? this.previousUrl : `/search/result/brick/${id}`;
     this.router.navigate([url]);
+  }
+
+  updateNumberOfDimensions(event) {
+    this.selectedNumberOfDimensions = parseInt(event.value, 10);
+    this.getPlotTypes();
+  }
+
+  get needsConstraints() {
+    // return this.metadata.dim_context.length > 2 
+    //   || (this.metadata.dim_context.length === 2 && this.selectedNumberOfDimensions === 2);
+    return this.metadata.dim_context.length >= this.selectedNumberOfDimensions
+      && this.metadata.dim_context.length !== 1;
   }
 
 }
