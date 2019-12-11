@@ -6,6 +6,7 @@ import 'datatables.net';
 import 'datatables.net-bs4';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { PlotService } from 'src/app/shared/services/plot.service';
 
 @Component({
   selector: 'app-search-result',
@@ -27,10 +28,13 @@ export class SearchResultComponent implements OnInit {
     private chRef: ChangeDetectorRef,
     private router: Router,
     private route: ActivatedRoute,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    private plotService: PlotService
   ) { }
 
   ngOnInit() {
+
+    this.plotService.clearPlotBuilder();
 
     this.searchType = this.queryBuilder.getSearchType();
     this.searchQuery = this.queryBuilder.getCurrentObject();
