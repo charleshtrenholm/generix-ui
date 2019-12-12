@@ -98,6 +98,18 @@ export class PlotService {
     return this.selectedIndices;
   }
 
+  setConstraints(index: string, value: string, searchValue?: number) {
+    if (!this.plotBuilder.constraints) { this.plotBuilder.constraints = {}; }
+    this.plotBuilder.constraints[index] = {type: value};
+    if (searchValue !== undefined) {
+      this.plotBuilder.constraints[index].index = searchValue;
+    }
+  }
+
+  setCustomIndex(index: string, value: number) {
+    this.plotBuilder.constraints[index].index = value;
+  }
+
   updateFormatString(format: string, axis: string) {
     this.plotBuilder.config[axis].label_pattern = format;
   }
