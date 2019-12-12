@@ -27,6 +27,7 @@ export class PlotOptionsComponent implements OnInit {
   public plotIcons = {};
   public previousUrl: string;
   public selectedNumberOfDimensions = 2;
+  public constraintList = [];
   @Output() updated: EventEmitter<any> = new EventEmitter();
   currentUrl: string;
   isEditor = false; // determines whether component is in plot/options or plot/result
@@ -132,15 +133,10 @@ export class PlotOptionsComponent implements OnInit {
     getPlotTypes() {
     this.plotService.getPlotTypes()
       .subscribe((data: any) => {
-        // filter plot types by n_dimension
-        // this.listPlotTypes = data.results.filter((val, idx) => {
-        //   return val.n_dimensions === this.metadata.dim_context.length;
-        // });
         this.listPlotTypes = data.results;
 
+        // determines whether to show 2d or 3d plots based on number of dimensions dropdown or if its 1D
         this.filteredPlotTypes = data.results.filter(val => {
-          // if (this.metadata.dim_context.length === 1) { return val.n_dimensions === 1; }
-          // return (val.n_dimensions + 1) >= this.selectedNumberOfDimensions;
           return this.selectedNumberOfDimensions === 2
             ? val.n_dimensions === 1 : val.n_dimensions > 1;
         });
@@ -192,8 +188,11 @@ export class PlotOptionsComponent implements OnInit {
   }
 
   get needsConstraints() {
-    // return this.metadata.dim_context.length > 2 
-    //   || (this.metadata.dim_context.length === 2 && this.selectedNumberOfDimensions === 2);
+    /*
+      plot needs constraints if there are more dimensions in brick than there are
+      dimensions selected in dropdown. they don't need constraints if the brick is
+      only one dimension as we will only display 1d plots for that.
+    */
     return this.metadata.dim_context.length >= this.selectedNumberOfDimensions
       && this.metadata.dim_context.length !== 1;
   }

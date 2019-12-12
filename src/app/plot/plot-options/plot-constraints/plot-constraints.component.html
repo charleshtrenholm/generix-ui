@@ -1,3 +1,17 @@
-<p>
-  plot-constraints works!
-</p>
+
+<div class="alert alert-warning form-container">
+  There are more dimensions in this brick than there are in the plot that you are trying to create. Please
+  specify constraints for the following values to narrow down the number of dimensions for your plot.
+</div>
+<div class="form-container">
+  <div class="card">
+    <div class="card-header light-blue">
+      Add Contstraints
+    </div>
+    <div class="card-body">
+      <span *ngFor="let value of unselectedValues;">
+        <pre>{{value | json}}</pre>
+      </span>
+    </div>
+  </div>
+</div>

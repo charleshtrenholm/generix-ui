@@ -16,6 +16,8 @@ export class PlotService {
   public plotType: string;
   public axisLabelBuilders: any = {};
   private axisLabelSub = new Subject();
+  private needsConstraintsSub: Subject<string[]> = new Subject();
+  public needsConstraintIds: string[] = [];
 
   constructor(private http: HttpClient) {
     const cachedPlotBuilder = this.getPlotCache();
@@ -88,6 +90,14 @@ export class PlotService {
     return this.axisLabelSub.asObservable();
   }
 
+  getUnselectedValues() {
+    return this.needsConstraintsSub.asObservable();
+  }
+
+  getUnselectedValueList() {
+    return this.needsConstraintIds;
+  }
+
   updateFormatString(format: string, axis: string) {
     this.plotBuilder.config[axis].label_pattern = format;
   }
@@ -102,6 +112,8 @@ export class PlotService {
 
   setPlotlyDataAxis(key: string, value: string) {
     this.plotBuilder.data[key] = value;
+    this.needsConstraintIds.push(value);
+    this.needsConstraintsSub.next(this.needsConstraintIds);
   }
 
   getPlotlyData() {

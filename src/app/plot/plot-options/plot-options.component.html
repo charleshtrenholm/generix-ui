@@ -60,7 +60,7 @@
       [index]="i"
     ></app-dimension-options>
   </div>
-  <app-plot-constraints *ngIf="metadata && needsConstraints"></app-plot-constraints>
+  <app-plot-constraints [metadata]="metadata" *ngIf="metadata && needsConstraints"></app-plot-constraints>
   <div class="row bottom-button-row">
     <!-- <button (click)="test()">TEST</button> --> 
     <button class="btn btn-primary offset-10" (click)="submitPlot()">

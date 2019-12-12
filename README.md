@@ -19,7 +19,9 @@ To run a development server, use the `ng serve` command and open your preferred 
 ## Deployment
 
 Once you are logged into the server, you can find a clone of the repository at `/home/clearinghouse/env/generix-ui/generix-ui`.
-Pull your changes and run the following build command:
+Pull your changes and run the following build commands:
+
+`npm install`
 
 `npm install`
 
