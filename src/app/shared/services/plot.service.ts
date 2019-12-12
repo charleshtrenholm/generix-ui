@@ -17,7 +17,7 @@ export class PlotService {
   public axisLabelBuilders: any = {};
   private axisLabelSub = new Subject();
   private needsConstraintsSub: Subject<string[]> = new Subject();
-  public needsConstraintIds: string[] = [];
+  public selectedIndices: string[] = [];
 
   constructor(private http: HttpClient) {
     const cachedPlotBuilder = this.getPlotCache();
@@ -95,7 +95,7 @@ export class PlotService {
   }
 
   getUnselectedValueList() {
-    return this.needsConstraintIds;
+    return this.selectedIndices;
   }
 
   updateFormatString(format: string, axis: string) {
@@ -112,8 +112,12 @@ export class PlotService {
 
   setPlotlyDataAxis(key: string, value: string) {
     this.plotBuilder.data[key] = value;
-    this.needsConstraintIds.push(value);
-    this.needsConstraintsSub.next(this.needsConstraintIds);
+    this.selectedIndices = [];
+    Object.keys(this.plotBuilder.data).forEach(newKey => {
+      const d = this.plotBuilder.data;
+      if (d[newKey].length) { this.selectedIndices.push(d[newKey]); }
+    });
+    this.needsConstraintsSub.next(this.selectedIndices);
   }
 
   getPlotlyData() {

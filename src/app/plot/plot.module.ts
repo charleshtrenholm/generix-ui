@@ -14,6 +14,7 @@ import { QueryBuilderService } from '../shared/services/query-builder.service';
 import { PlotService } from '../shared/services/plot.service';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { PlotConstraintsComponent } from './plot-options/plot-constraints/plot-constraints.component';
+import { PlotConstraintItemComponent } from './plot-options/plot-constraints/plot-constraint-item/plot-constraint-item.component';
 
 PlotlyModule.plotlyjs = PlotlyJS;
 @NgModule({
@@ -23,7 +24,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     DimensionOptionsComponent,
     AxisLabelerComponent,
     PlotResultComponent,
-    PlotConstraintsComponent
+    PlotConstraintsComponent,
+    PlotConstraintItemComponent
   ],
   imports: [
     CommonModule,

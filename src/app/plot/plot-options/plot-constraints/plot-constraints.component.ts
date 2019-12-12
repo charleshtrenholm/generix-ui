@@ -32,9 +32,14 @@ export class PlotConstraintsComponent implements OnInit {
     this.unselectedValues = [...this.metadata.dim_context.filter(item => {
       return !values.includes(this.metadata.dim_context.indexOf(item).toString());
     })];
-    if (values.includes('D')) {
+    if (!values.includes('D')) {
       this.unselectedValues.push(this.metadata.typed_values[0]);
     }
+  }
+
+  getIndex(item) {
+    if (item.value_type) { return 'D'; }
+    return this.metadata.dim_context.indexOf(item).toString();
   }
 
 }
