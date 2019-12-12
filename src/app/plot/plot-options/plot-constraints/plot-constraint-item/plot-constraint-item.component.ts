@@ -52,6 +52,7 @@ export class PlotConstraintItemComponent implements OnInit {
   };
 
   ngOnInit() {
+    console.log('DATA', this.data);
   }
 
   setFilterType(event) {
