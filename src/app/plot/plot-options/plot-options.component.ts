@@ -26,7 +26,6 @@ export class PlotOptionsComponent implements OnInit {
   public dimensions: Dimension[];
   public plotIcons = {};
   public previousUrl: string;
-  public selectedNumberOfDimensions = 2;
   public constraintList = [];
   @Output() updated: EventEmitter<any> = new EventEmitter();
   currentUrl: string;
@@ -75,12 +74,6 @@ export class PlotOptionsComponent implements OnInit {
     this.queryBuilder.getObjectMetadata(this.objectId)
       .subscribe((result: any) => {
         this.metadata = result;
-        // this.selectedNumberOfDimensions = this.metadata.dim_context.length <= 1 ? 2 : 3;
-        if (this.metadata.dim_context.length === 1) {
-          this.selectedNumberOfDimensions = 1;
-        } else {
-          this.selectedNumberOfDimensions = 2;
-        }
 
         // get list of plot types from server
         this.getPlotTypes();
@@ -116,13 +109,15 @@ export class PlotOptionsComponent implements OnInit {
     }
 
     setConfig(data) {
-      this.plotService.setConfig(
-        data.data_type.oterm_name,
-        this.selectedNumberOfDimensions - 1,
-        (dims: Dimension[]) => {
-          this.dimensions = dims;
-        }
-      );
+      if (this.selectedPlotType) {
+        this.plotService.setConfig(
+          data.data_type.oterm_name,
+          this.selectedPlotType.n_dimensions,
+          (dims: Dimension[]) => {
+            this.dimensions = dims;
+          }
+        );
+      }
     }
 
     getPlotTypes() {
@@ -132,7 +127,7 @@ export class PlotOptionsComponent implements OnInit {
 
         // determines whether to show 2d or 3d plots based on number of dimensions dropdown or if its 1D
         this.filteredPlotTypes = data.results.filter(val => {
-          return this.selectedNumberOfDimensions === 1
+          return this.metadata.dim_context.length === 1
             ? val.n_dimensions === 1 : true;
         });
 
@@ -156,7 +151,6 @@ export class PlotOptionsComponent implements OnInit {
       this.plotBuilder.plotly_layout = plotly_layout;
       this.axisBlocks = axis_blocks;
       this.selectedPlotType = this.filteredPlotTypes[n];
-      // this.selectedNumberOfDimensions = this.selectedPlotType.n_dimensions;
       this.setConfig(this.metadata);
       this.plotService.setPlotType(event.value);
     }
@@ -184,8 +178,6 @@ export class PlotOptionsComponent implements OnInit {
       dimensions selected in dropdown. they don't need constraints if the brick is
       only one dimension as we will only display 1d plots for that.
     */
-    // return this.metadata.dim_context.length >= this.selectedNumberOfDimensions
-    //   && this.metadata.dim_context.length !== 1;
     return this.selectedPlotType && this.selectedPlotType.n_dimensions < this.metadata.dim_context.length;
   }
 

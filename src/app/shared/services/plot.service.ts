@@ -99,6 +99,7 @@ export class PlotService {
   }
 
   setConstraints(index: string, value?: number) {
+    this.plotBuilder.constraints = this.plotBuilder.constraints.filter(item => item.dim_index !== index);
     this.plotBuilder.constraints.push({
       dim_index: index,
       item_index: value
