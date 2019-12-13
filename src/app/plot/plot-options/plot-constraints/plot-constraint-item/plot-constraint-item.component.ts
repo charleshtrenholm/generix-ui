@@ -21,19 +21,7 @@ export class PlotConstraintItemComponent implements OnInit {
 
   @Input() set item(item: any) {
     this.data = item;
-    this.title = item.data_type
-      ? item.data_type.oterm_name : item.value_type.oterm_name;
-
-    // if (item.typed_values) {
-    //   this.dimensionVariables = [
-    //     ...this.dimensionVariables, ...item.typed_values.map((value, idx) => {
-    //       return {id: idx, text: value.value_type.oterm_name};
-    //     })
-    //   ];
-    // } else {
-    //   this.isDataValue = true;
-    // }
-    if (!item.typed_values) { this.isDataValue = true; }
+    this.title = item.data_type.oterm_name;
   }
 
   @Input() index: string;
@@ -42,7 +30,6 @@ export class PlotConstraintItemComponent implements OnInit {
   data: any;
   dataTable: any;
   selectedDataTableIndex: number;
-  // selectedDimVar: any;
   filterType: string;
   customIndexValue: string;
 
