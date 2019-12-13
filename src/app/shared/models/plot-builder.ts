@@ -17,7 +17,7 @@ export class PlotBuilder {
     public config: Config = new Config();
     public plotly_trace: any;
     public plotly_layout: any;
-    public constraints: any;
+    public constraints: any[] = [];
 }
 
 export class Dimension {

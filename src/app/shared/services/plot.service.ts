@@ -99,8 +99,10 @@ export class PlotService {
   }
 
   setConstraints(index: string, value?: number) {
-    if (!this.plotBuilder.constraints) { this.plotBuilder.constraints = {}; }
-    this.plotBuilder.constraints[index] = value;
+    this.plotBuilder.constraints.push({
+      dim_index: index,
+      item_index: value
+    });
   }
 
   setCustomIndex(index: string, value: number) {
@@ -117,6 +119,7 @@ export class PlotService {
     localStorage.removeItem('plotBuilder');
     this.axisLabelBuilders = {};
     this.plotBuilder = new PlotBuilder();
+    this.selectedIndices = [];
   }
 
   setPlotlyDataAxis(key: string, value: string) {
@@ -126,9 +129,9 @@ export class PlotService {
       const d = this.plotBuilder.data;
       if (d[newKey].length) { this.selectedIndices.push(d[newKey]); }
     });
-    if (this.plotBuilder.constraints && this.plotBuilder.constraints[value]) {
-      delete this.plotBuilder.constraints[value];
-    }
+    this.plotBuilder.constraints = this.plotBuilder.constraints.filter(item => {
+      return item.dim_index !== value;
+    });
     this.needsConstraintsSub.next(this.selectedIndices);
   }
 
