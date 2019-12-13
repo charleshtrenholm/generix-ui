@@ -41,6 +41,7 @@ export class PlotConstraintItemComponent implements OnInit {
   title: string;
   data: any;
   dataTable: any;
+  selectedDataTableIndex: number;
   // selectedDimVar: any;
   filterType: string;
   customIndexValue: string;
@@ -59,17 +60,14 @@ export class PlotConstraintItemComponent implements OnInit {
   };
 
   ngOnInit() {
-    console.log('DATA', this.data);
   }
 
   setFilterType(event) {
     this.filterType = event.value;
     if (event.value === 'first') {
-      this.plotService.setConstraints(this.index, event.value, 0);
+      this.plotService.setConstraints(this.index, 0);
     } else if (event.value === 'last') {
-      this.plotService.setConstraints(this.index, event.value, this.data.size - 1);
-    } else {
-      this.plotService.setConstraints(this.index, event.value);
+      this.plotService.setConstraints(this.index, this.data.size - 1);
     }
     if (event.value === 'custom_val') {
       const table: any = $(this.el.nativeElement);
@@ -78,10 +76,15 @@ export class PlotConstraintItemComponent implements OnInit {
     }
   }
 
+  setCustomValueIndex(index: number) {
+    this.plotService.setConstraints(this.index, index);
+    this.selectedDataTableIndex = index;
+  }
+
   setCustomIndex() {
     const newCustomIndex = parseInt(this.customIndexValue, 10);
     if (!isNaN(newCustomIndex)) {
-      this.plotService.setCustomIndex(this.index, newCustomIndex);
+      this.plotService.setConstraints(this.index, newCustomIndex);
     } else {
       // validation error: invalid value type
     }

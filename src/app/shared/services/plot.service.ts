@@ -98,12 +98,9 @@ export class PlotService {
     return this.selectedIndices;
   }
 
-  setConstraints(index: string, value: string, searchValue?: number) {
+  setConstraints(index: string, value?: number) {
     if (!this.plotBuilder.constraints) { this.plotBuilder.constraints = {}; }
-    this.plotBuilder.constraints[index] = {type: value};
-    if (searchValue !== undefined) {
-      this.plotBuilder.constraints[index].index = searchValue;
-    }
+    this.plotBuilder.constraints[index] = value;
   }
 
   setCustomIndex(index: string, value: number) {
@@ -129,12 +126,19 @@ export class PlotService {
       const d = this.plotBuilder.data;
       if (d[newKey].length) { this.selectedIndices.push(d[newKey]); }
     });
+    if (this.plotBuilder.constraints && this.plotBuilder.constraints[value]) {
+      delete this.plotBuilder.constraints[value];
+    }
     this.needsConstraintsSub.next(this.selectedIndices);
   }
 
   getPlotlyData() {
     this.parseIntDataAxes();
     return this.http.post<any>(`${environment.baseURL}/plotly_data`, this.plotBuilder);
+  }
+
+  getFlattenedDimensionValues(index: string) {
+    return this.http.get(`${environment.baseURL}/get_flattened_values/${this.plotBuilder.objectId}/${index}`);
   }
 
   parseIntDataAxes() {

@@ -1,0 +1,8 @@
+tbody > tr:hover:not(.selected) {
+    background-color: #eee;
+}
+
+.selected {
+    background-color: #007Bff;
+    color: white;
+}
