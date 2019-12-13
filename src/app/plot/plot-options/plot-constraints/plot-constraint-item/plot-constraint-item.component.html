@@ -2,7 +2,7 @@
   <div class="col-12">
     <div class="row">
       <div class="col-4">
-        <strong>{{title}}</strong>
+        <strong>{{title}} ({{data.size}})</strong>
       </div>
       <div class="col-2">Filter Type: </div>
       <div class="col-6">
@@ -28,8 +28,8 @@
         />
       </div>
     </div>
-    <div class="row mt-2" *ngIf="filterType === 'custom_val' && !isDataValue">
-      <div class="col-12">
+    <div class="row mt-2" [hidden]="filterType !== 'custom_val' || isDataValue">
+      <!-- <div class="col-12">
         <div class="row">
           <div class="col-12">
               <p>Select an individual value from each dimension variable to narrow the dimension size down to 1.</p>
@@ -42,6 +42,24 @@
               [cssImport]="true"></select2>
           </div>
         </div>
+      </div> -->
+      <div class="col-12">
+        <table class="table table-bordered" #table>
+          <thead class="table-header">
+            <tr>
+              <th *ngFor="let dimVar of data.typed_values">
+                {{dimVar.value_type.oterm_name}}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let _ of [].constructor(data.size); let i = index;">
+              <td *ngFor ="let item of data.typed_values;">
+                {{item.values.values[i]}}
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>

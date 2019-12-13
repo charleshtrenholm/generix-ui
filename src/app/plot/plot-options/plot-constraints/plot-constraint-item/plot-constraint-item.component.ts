@@ -1,6 +1,9 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { Select2OptionData } from 'ng2-select2';
-import { PlotService } from 'src/app/shared/services/plot.service'; 
+import { PlotService } from 'src/app/shared/services/plot.service';
+import * as $ from 'jquery';
+import 'datatables.net';
+import 'datatables.net-bs4';
 
 @Component({
   selector: 'app-plot-constraint-item',
@@ -10,8 +13,11 @@ import { PlotService } from 'src/app/shared/services/plot.service';
 export class PlotConstraintItemComponent implements OnInit {
 
   constructor(
-    private plotService: PlotService
+    private plotService: PlotService,
+    private chRef: ChangeDetectorRef,
   ) { }
+
+  @ViewChild('table') el: ElementRef;
 
   @Input() set item(item: any) {
     this.data = item;
@@ -34,6 +40,7 @@ export class PlotConstraintItemComponent implements OnInit {
 
   title: string;
   data: any;
+  dataTable: any;
   // selectedDimVar: any;
   filterType: string;
   customIndexValue: string;
@@ -63,6 +70,11 @@ export class PlotConstraintItemComponent implements OnInit {
       this.plotService.setConstraints(this.index, event.value, this.data.size - 1);
     } else {
       this.plotService.setConstraints(this.index, event.value);
+    }
+    if (event.value === 'custom_val') {
+      const table: any = $(this.el.nativeElement);
+      this.dataTable = table.DataTable();
+      this.chRef.detectChanges();
     }
   }
 
