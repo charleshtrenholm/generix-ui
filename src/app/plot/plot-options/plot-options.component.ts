@@ -44,11 +44,6 @@ export class PlotOptionsComponent implements OnInit {
     escapeMarkup: m => m
   };
 
-  numberOfDimensions: Select2OptionData[] = [
-    {id: '2', text: '2'},
-    {id: '3', text: '3'}
-  ];
-
   constructor(
     private route: ActivatedRoute,
     private plotService: PlotService,
@@ -137,8 +132,8 @@ export class PlotOptionsComponent implements OnInit {
 
         // determines whether to show 2d or 3d plots based on number of dimensions dropdown or if its 1D
         this.filteredPlotTypes = data.results.filter(val => {
-          return this.selectedNumberOfDimensions === 2
-            ? val.n_dimensions === 1 : val.n_dimensions > 1;
+          return this.selectedNumberOfDimensions === 1
+            ? val.n_dimensions === 1 : true;
         });
 
         // add plot type values to select2
@@ -161,6 +156,7 @@ export class PlotOptionsComponent implements OnInit {
       this.plotBuilder.plotly_layout = plotly_layout;
       this.axisBlocks = axis_blocks;
       this.selectedPlotType = this.filteredPlotTypes[n];
+      // this.selectedNumberOfDimensions = this.selectedPlotType.n_dimensions;
       this.setConfig(this.metadata);
       this.plotService.setPlotType(event.value);
     }
@@ -182,19 +178,15 @@ export class PlotOptionsComponent implements OnInit {
     this.router.navigate([url]);
   }
 
-  updateNumberOfDimensions(event) {
-    this.selectedNumberOfDimensions = parseInt(event.value, 10);
-    this.getPlotTypes();
-  }
-
   get needsConstraints() {
     /*
       plot needs constraints if there are more dimensions in brick than there are
       dimensions selected in dropdown. they don't need constraints if the brick is
       only one dimension as we will only display 1d plots for that.
     */
-    return this.metadata.dim_context.length >= this.selectedNumberOfDimensions
-      && this.metadata.dim_context.length !== 1;
+    // return this.metadata.dim_context.length >= this.selectedNumberOfDimensions
+    //   && this.metadata.dim_context.length !== 1;
+    return this.selectedPlotType && this.selectedPlotType.n_dimensions < this.metadata.dim_context.length;
   }
 
 }
